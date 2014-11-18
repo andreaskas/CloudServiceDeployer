@@ -2,7 +2,12 @@ package cy.ac.ucy.linc.cloudDeployer.connectors;
 import java.util.List;
 import java.util.Map;
 
+import cy.ac.ucy.linc.cloudDeployer.beans.FlavorObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.ImageObj;
+import cy.ac.ucy.linc.cloudDeployer.beans.InstancesObj;
+import cy.ac.ucy.linc.cloudDeployer.beans.KeyPairsObj;
+import cy.ac.ucy.linc.cloudDeployer.beans.NetworkObj;
+import cy.ac.ucy.linc.cloudDeployer.beans.SecurityGroupsObj;
 
 
 public interface ICloudConnector {
@@ -74,7 +79,7 @@ public interface ICloudConnector {
 	 * @param params
 	 * @return
 	 */
-	public List<String> getFlavorList(Map<String, String> params);
+	public List<FlavorObj> getFlavorList(Map<String, String> params);
 	
 	/**
 	 * Get the list of the available images, that the user has access to.
@@ -105,16 +110,16 @@ public interface ICloudConnector {
 	
 	//nicholas stuff
 	/* The list of virtual network interfaces */	
-	public List<String> getNetworks();
+	public List<NetworkObj> getNetworks();
 	
 	/* The list of SSH keypairs available at the IaaS */
-	public List<String> getKeyPairs();
+	public List<KeyPairsObj> getKeyPairs();
 	
 	/* The list of Security Groups */
-	public List<String> getSecurityGroups();
+	public List<SecurityGroupsObj> getSecurityGroups();
 	
 	/* The list of running instances - We might want to have this to clone a running instance */
-	public List<String> getInstances();
+	public List<InstancesObj> getInstances();
 	
 	//Note: We may need specific methods for authentication but will look into that. 
 	//      The may be added in the implementation and not in the interface. Have to look into this. 	
