@@ -123,4 +123,6 @@ public interface ICloudConnector {
 	
 	//Note: We may need specific methods for authentication but will look into that. 
 	//      The may be added in the implementation and not in the interface. Have to look into this. 	
+	
+	public String createImageFromInstance(String imageName, String instanceID);
 }

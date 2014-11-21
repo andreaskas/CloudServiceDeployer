@@ -56,6 +56,9 @@ public class Deployer {
 		List<InstancesObj> instances = conn.getInstances();
 		for (InstancesObj insta : instances)
 			System.out.println(insta.toString());
+		
+		conn.addInstanceToModule(null, null);
+		
 	}
 
 	// parse the configuration file

@@ -30,6 +30,8 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.SecurityGroupApi;
 import org.jclouds.openstack.nova.v2_0.features.FlavorApi;
 import org.jclouds.openstack.nova.v2_0.features.ImageApi;
+import org.jclouds.openstack.nova.v2_0.features.ServerApi;
+import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.jclouds.openstack.keystone.v2_0.domain.Service;
 
@@ -52,6 +54,7 @@ import cy.ac.ucy.linc.cloudDeployer.connectors.ICloudConnector;
 public class OpenstackConnector implements ICloudConnector {
 	private static final String PROVIDER = "openstack-nova";
 	private static final String NOVA_API_VERSION = "v2.0";
+	private static final String DEFAULT_REGION = "regionOne";
 
 	private NovaApi novaAPI;
 	private ComputeService computeAPI;
@@ -69,18 +72,14 @@ public class OpenstackConnector implements ICloudConnector {
 		String apiEndpointPort = params.get("apiEndpointPort");
 		String identity = tenant + ":" + username; // tenantName:userName
 
-		Iterable<Module> modules = ImmutableSet
-				.<Module> of(new SLF4JLoggingModule());
-		ContextBuilder builder = ContextBuilder
-				.newBuilder(new NovaApiMetadata())
-				.endpoint(
-						apiEndpointURL + ":" + apiEndpointPort + "/"
-								+ OpenstackConnector.NOVA_API_VERSION + "/")
-				.credentials(identity, password).modules(modules);
-		computeAPI = builder.buildView(ComputeServiceContext.class)
-				.getComputeService();
-		novaAPI = builder.buildApi(NovaApi.class);
-
+		Iterable<Module> modules = ImmutableSet.<Module> of(new SLF4JLoggingModule());
+		ContextBuilder builder = ContextBuilder.newBuilder(new NovaApiMetadata())
+											   .endpoint(apiEndpointURL + ":" + apiEndpointPort + "/" 
+		                                                 + OpenstackConnector.NOVA_API_VERSION + "/")
+		                                       .credentials(identity, password).modules(modules);
+		
+		this.computeAPI = builder.buildView(ComputeServiceContext.class).getComputeService();
+		this.novaAPI = builder.buildApi(NovaApi.class);
 		this.zones = this.novaAPI.getConfiguredZones();
 	}
 
@@ -106,6 +105,7 @@ public class OpenstackConnector implements ICloudConnector {
 
 	public String addInstanceToModule(String modID, Map<String, String> params) {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -206,6 +206,12 @@ public class OpenstackConnector implements ICloudConnector {
 			instances.add(new InstancesObj(i.getId(), i.getName()));
 
 		return instances;
+	}
+	
+	public String createImageFromInstance(String imageName, String instanceID){
+		ServerApi serverAPI = this.novaAPI.getServerApiForZone(OpenstackConnector.DEFAULT_REGION);
+		String imageID = serverAPI.createImageFromServer(imageName, instanceID);
+		return imageID;
 	}
 
 }
