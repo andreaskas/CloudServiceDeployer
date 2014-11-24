@@ -52,5 +52,11 @@
   		<version>1.8.1</version>
   		<classifier>tests</classifier>
   	</dependency>
+  	<dependency>
+  		<groupId>org.apache.jclouds.labs</groupId>
+  		<artifactId>openstack-neutron</artifactId>
+  		<version>1.8.0</version>
+  		<classifier>tests</classifier>
+  	</dependency>
   </dependencies>
 </project>

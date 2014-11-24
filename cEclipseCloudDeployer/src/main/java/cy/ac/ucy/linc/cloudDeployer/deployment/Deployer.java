@@ -57,7 +57,19 @@ public class Deployer {
 		for (InstancesObj insta : instances)
 			System.out.println(insta.toString());
 		
-		conn.addInstanceToModule(null, null);
+		//conn.addInstanceToModule(null, null);
+		
+		HashMap<String,String> instanceProperties = new HashMap<String,String>();
+		instanceProperties.put("name", "myfavoritevm");
+		instanceProperties.put("imageID", "regionOne/8d2433da-8464-4abf-b149-2313c8639949");
+		instanceProperties.put("flavor","2");
+		instanceProperties.put("network","3ebaa012-be83-4708-afa0-24cf815be072");
+		instanceProperties.put("keypair","mykey");
+		instanceProperties.put("securityGroup","default");
+
+		String msg =""; 
+//		msg = conn.addInstanceToModule(null, instanceProperties);
+		System.out.println(msg);
 		
 	}
 

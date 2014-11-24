@@ -25,6 +25,7 @@ import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.SecurityGroup;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
+import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.SecurityGroupApi;
@@ -104,9 +105,27 @@ public class OpenstackConnector implements ICloudConnector {
 	}
 
 	public String addInstanceToModule(String modID, Map<String, String> params) {
-		// TODO Auto-generated method stub
+		String instName = params.get("name");
+		String imageID = params.get("imageID");
+		String flavorID = params.get("flavor");
+		String net1 = params.get("network");
+		String[] networks = {net1};
+		String keypair = params.get("keypair");
+		String securityGroup = params.get("securityGroup");
+		CreateServerOptions serverOpts = CreateServerOptions.Builder.adminPass("linc").networks(networks);
+		serverOpts.keyPairName(keypair);
+		serverOpts.securityGroupNames(securityGroup);
 		
-		return null;
+//	    for (Entry<String, String> entry : params.entrySet()){
+//			System.out.println(entry.getKey()+" "+entry.getValue());
+//		}
+	    
+		System.out.println("OpenstackConnector>> received ADD instance request, with instance name: " + instName);
+		
+		ServerApi serverAPI = this.novaAPI.getServerApiForZone(OpenstackConnector.DEFAULT_REGION);
+		ServerCreated s = serverAPI.create(instName, imageID, flavorID, serverOpts);
+	
+		return s.getId();
 	}
 
 	public String removeInstanceFromModule(String vID, String modID) {
