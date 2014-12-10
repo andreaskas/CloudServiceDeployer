@@ -1,11 +1,11 @@
-package cy.ac.ucy.linc.cloudDeployer.beans;
+package cy.ac.ucy.linc.cloudDeployer.deployment;
 
-public class InstancesObj {
+public class Instance {
 
 	private String InstanceID;
 	private String InstanceName;
 
-	public InstancesObj(String instanceID, String instanceName) {
+	public Instance(String instanceID, String instanceName) {
 		this.InstanceID = instanceID;
 		this.InstanceName = instanceName;
 	}
