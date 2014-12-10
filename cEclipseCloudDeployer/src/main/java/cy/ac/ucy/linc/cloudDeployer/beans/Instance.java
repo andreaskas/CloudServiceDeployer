@@ -1,4 +1,4 @@
-package cy.ac.ucy.linc.cloudDeployer.deployment;
+package cy.ac.ucy.linc.cloudDeployer.beans;
 
 public class Instance {
 
