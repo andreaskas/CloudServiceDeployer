@@ -17,12 +17,14 @@ import org.jclouds.ContextBuilder;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.keystone.v2_0.domain.Access;
 import org.jclouds.openstack.keystone.v2_0.domain.Endpoint;
+import org.jclouds.openstack.neutron.v2.NeutronApi;
+import org.jclouds.openstack.neutron.v2.NeutronApiMetadata;
+import org.jclouds.openstack.neutron.v2.domain.Network;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.domain.Flavor;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
-import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.SecurityGroup;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
@@ -46,32 +48,32 @@ import com.google.inject.TypeLiteral;
 
 import cy.ac.ucy.linc.cloudDeployer.beans.ImageObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.FlavorObj;
-import cy.ac.ucy.linc.cloudDeployer.beans.InstancesObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.KeyPairsObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.NetworkObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.SecurityGroupsObj;
 import cy.ac.ucy.linc.cloudDeployer.connectors.ICloudConnector;
+import cy.ac.ucy.linc.cloudDeployer.deployment.Instance;
 
 public class OpenstackConnector implements ICloudConnector {
 	private static final String PROVIDER = "openstack-nova";
+	private static final String NEUTRON_PROVIDER = "openstack-neutron";
 	private static final String NOVA_API_VERSION = "v2.0";
 	private static final String DEFAULT_REGION = "regionOne";
 
 	private NovaApi novaAPI;
 	private ComputeService computeAPI;
+	private NeutronApi networkAPI;
 	private Set<String> zones;
 
 	private HashMap<String, String> params;
 
 	public OpenstackConnector(HashMap<String, String> params) {
-		// for(Entry<String, String> e : params.entrySet())
-		// System.out.println(e.getKey() + " " + e.getValue());
 		String tenant = params.get("tenant");
 		String username = params.get("username");
 		String password = params.get("password");
 		String apiEndpointURL = params.get("apiEndpointURL");
 		String apiEndpointPort = params.get("apiEndpointPort");
-		String identity = tenant + ":" + username; // tenantName:userName
+		String identity = tenant + ":" + username; 
 
 		Iterable<Module> modules = ImmutableSet.<Module> of(new SLF4JLoggingModule());
 		ContextBuilder builder = ContextBuilder.newBuilder(new NovaApiMetadata())
@@ -82,29 +84,14 @@ public class OpenstackConnector implements ICloudConnector {
 		this.computeAPI = builder.buildView(ComputeServiceContext.class).getComputeService();
 		this.novaAPI = builder.buildApi(NovaApi.class);
 		this.zones = this.novaAPI.getConfiguredZones();
+		
+		this.networkAPI = ContextBuilder.newBuilder(new NeutronApiMetadata())
+				   .endpoint(apiEndpointURL + ":" + apiEndpointPort + "/" 
+                           + OpenstackConnector.NOVA_API_VERSION + "/")
+                 .credentials(identity, password).modules(modules).buildApi(NeutronApi.class);		
 	}
-
-	public String createDeployment(Map<String, String> params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String terminateDeployment(String depID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String createModule(String depID, Map<String, String> params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String terminateModule(String modID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String addInstanceToModule(String modID, Map<String, String> params) {
+	
+	public String createInstance(Map<String, String> params) {
 		String instName = params.get("name");
 		String imageID = params.get("imageID");
 		String flavorID = params.get("flavor");
@@ -116,26 +103,23 @@ public class OpenstackConnector implements ICloudConnector {
 		serverOpts.keyPairName(keypair);
 		serverOpts.securityGroupNames(securityGroup);
 		
-//	    for (Entry<String, String> entry : params.entrySet()){
-//			System.out.println(entry.getKey()+" "+entry.getValue());
-//		}
-	    
 		System.out.println("OpenstackConnector>> received ADD instance request, with instance name: " + instName);
 		
 		ServerApi serverAPI = this.novaAPI.getServerApiForZone(OpenstackConnector.DEFAULT_REGION);
 		ServerCreated s = serverAPI.create(instName, imageID, flavorID, serverOpts);
-	
+		
 		return s.getId();
 	}
 
-	public String removeInstanceFromModule(String vID, String modID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String removeInstaceFromModule(String modID) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean terminateInstance(String vID) {
+		ServerApi serverAPI = this.novaAPI.getServerApiForZone(DEFAULT_REGION);
+		if (serverAPI.delete(vID)) {
+			System.out.println("Successfully removed instance: "+vID);
+			return true;
+		}
+		else
+			System.out.println("Instance does not exist: "+vID);
+		return false;
 	}
 
 	public List<FlavorObj> getFlavorList(Map<String, String> params) {
@@ -172,16 +156,21 @@ public class OpenstackConnector implements ICloudConnector {
 	}
 
 	public List<NetworkObj> getNetworks() {
-
 		List<NetworkObj> networklist = new ArrayList<NetworkObj>();
-		Optional<? extends FloatingIPApi> zonesapi = this.novaAPI
-				.getFloatingIPExtensionForZone("regionOne");
-		FloatingIPApi floatingapi = zonesapi.get();
-		Set<? extends FloatingIP> response = floatingapi.list().toSet();
 
-		for (FloatingIP ip : response) {
-			networklist.add(new NetworkObj(ip.getFixedIp(), ip.getIp()));
+		for (Network n: this.networkAPI.getNetworkApi(OpenstackConnector.DEFAULT_REGION).list().concat()){
+			System.out.println(n.getName()+" "+n.getId());
 		}
+
+//
+//		Optional<? extends FloatingIPApi> zonesapi = this.novaAPI
+//				.getFloatingIPExtensionForZone("regionOne");
+//		FloatingIPApi floatingapi = zonesapi.get();
+//		Set<? extends FloatingIP> response = floatingapi.list().toSet();
+//
+//		for (FloatingIP ip : response) {
+//			networklist.add(new NetworkObj(ip.getFixedIp(), ip.getIp()));
+//		}
 
 		return networklist;
 	}
@@ -218,11 +207,11 @@ public class OpenstackConnector implements ICloudConnector {
 		return securitygroup;
 	}
 
-	public List<InstancesObj> getInstances() {
-		List<InstancesObj> instances = new ArrayList<InstancesObj>();
+	public List<Instance> getInstances() {
+		List<Instance> instances = new ArrayList<Instance>();
 
 		for (ComputeMetadata i : this.computeAPI.listNodes())
-			instances.add(new InstancesObj(i.getId(), i.getName()));
+			instances.add(new Instance(i.getId(), i.getName()));
 
 		return instances;
 	}
@@ -232,5 +221,4 @@ public class OpenstackConnector implements ICloudConnector {
 		String imageID = serverAPI.createImageFromServer(imageName, instanceID);
 		return imageID;
 	}
-
 }

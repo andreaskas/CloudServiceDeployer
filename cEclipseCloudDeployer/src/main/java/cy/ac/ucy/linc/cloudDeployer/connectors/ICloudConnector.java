@@ -4,70 +4,20 @@ import java.util.Map;
 
 import cy.ac.ucy.linc.cloudDeployer.beans.FlavorObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.ImageObj;
-import cy.ac.ucy.linc.cloudDeployer.beans.InstancesObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.KeyPairsObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.NetworkObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.SecurityGroupsObj;
+import cy.ac.ucy.linc.cloudDeployer.deployment.Instance;
 
 
 public interface ICloudConnector {
-
-	/**
-	 * create an initial deployment and parameterizes it (if needed).
-	 * returns the deployment ID.
-	 * @param params
-	 * @return
-	 */
-	public String createDeployment(Map<String, String> params);
 	
-	/**
-	 * terminate the deployment with given deployment ID.
-	 * returns the status of this action (success, fail).
-	 * for now lets keep the return value as a string.
-	 * @param depID
-	 * @return
-	 */
-	public String terminateDeployment(String depID);
 	
-	/**
-	 * create a high level logical abstraction for a tier of
-	 * a cloud application. Cloud providers usually dont categorize
-	 * virtual running instances but orchestrators do. Returns module ID.
-	 * @param depID
-	 * @param params
-	 * @return
-	 */
-	public String createModule(String depID, Map<String, String> params);
+	public String createInstance(Map<String, String> params);
 	
-	/**
-	 * terminate the module with the given module ID
-	 * @param modID
-	 * @return
-	 */
-	public String terminateModule(String modID);
 	
-	/**
-	 * add an instance of a component described in c-Eclipse. To the module
-	 * with the given modID. Return instance id.
-	 * @param modID
-	 * @param params
-	 * @return
-	 */
-	public String addInstanceToModule(String modID, Map<String, String> params);
+	public boolean terminateInstance(String vID);
 	
-	/**
-	 * remove/terminate instance with vID from the given module with modID.
-	 * return a status message.
-	 * @return
-	 */
-	public String removeInstanceFromModule(String vID, String modID);
-	
-	/**
-	 * remove/terminate ANY instance from the given module with modID
-	 * @param modID
-	 * @return
-	 */
-	public String removeInstaceFromModule(String modID);
 	
 	//thanasis stuff
 	/**
@@ -119,7 +69,7 @@ public interface ICloudConnector {
 	public List<SecurityGroupsObj> getSecurityGroups();
 	
 	/* The list of running instances - We might want to have this to clone a running instance */
-	public List<InstancesObj> getInstances();
+	public List<Instance> getInstances();
 	
 	//Note: We may need specific methods for authentication but will look into that. 
 	//      The may be added in the implementation and not in the interface. Have to look into this. 	
