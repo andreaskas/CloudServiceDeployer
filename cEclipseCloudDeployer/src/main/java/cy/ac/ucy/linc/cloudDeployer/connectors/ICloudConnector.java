@@ -4,10 +4,10 @@ import java.util.Map;
 
 import cy.ac.ucy.linc.cloudDeployer.beans.FlavorObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.ImageObj;
+import cy.ac.ucy.linc.cloudDeployer.beans.Instance;
 import cy.ac.ucy.linc.cloudDeployer.beans.KeyPairsObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.NetworkObj;
 import cy.ac.ucy.linc.cloudDeployer.beans.SecurityGroupsObj;
-import cy.ac.ucy.linc.cloudDeployer.deployment.Instance;
 
 
 public interface ICloudConnector {
