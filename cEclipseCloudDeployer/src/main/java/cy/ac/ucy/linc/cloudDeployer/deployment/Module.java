@@ -6,19 +6,18 @@ import java.util.UUID;
 
 import cy.ac.ucy.linc.cloudDeployer.beans.Instance;
 
-
 public class Module {
 
 	private String modID;
 	private String modName;
 	private ArrayList<Instance> instancelist;
 
-	public Module(HashMap<String,String> params) {
+	public Module(HashMap<String, String> params) {
 		this.modID = UUID.randomUUID().toString();
 		this.modName = params.get("name");
-		this.instancelist = new ArrayList<Instance> ();
+		this.instancelist = new ArrayList<Instance>();
 	}
-	
+
 	public String getModName() {
 		return modName;
 	}
@@ -28,11 +27,13 @@ public class Module {
 	}
 
 	public void addInstance(String instID) {
-		instancelist.add(new Instance(instID,instID)); //pass the instance ID as the name for now
+		instancelist.add(new Instance(instID, null, null, null, null));
+		// pass the instance ID and set
+		// the rest parameters to null for now
 	}
 
 	public void removeInstance(String instID) {
-		for (int i=0;i<this.instancelist.size();i++){
+		for (int i = 0; i < this.instancelist.size(); i++) {
 			Instance obj = this.instancelist.get(i);
 			if (obj.getInstanceID().equals(instID))
 				this.instancelist.remove(i);

@@ -11,14 +11,7 @@ import cy.ac.ucy.linc.cloudDeployer.beans.SecurityGroupsObj;
 
 
 public interface ICloudConnector {
-	
-	
-	public String createInstance(Map<String, String> params);
-	
-	
-	public boolean terminateInstance(String vID);
-	
-	
+		
 	//thanasis stuff
 	/**
 	 * Get the list of the available flavors (vm configurations),
@@ -75,4 +68,8 @@ public interface ICloudConnector {
 	//      The may be added in the implementation and not in the interface. Have to look into this. 	
 	
 	public String createImageFromInstance(String imageName, String instanceID);
+	
+	public String createInstance(Map<String, String> params);
+	
+	public boolean terminateInstance(String vID);
 }

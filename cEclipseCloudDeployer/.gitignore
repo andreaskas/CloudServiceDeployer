@@ -1,2 +1,3 @@
 target/*
 Resources/config.properties
+/target/

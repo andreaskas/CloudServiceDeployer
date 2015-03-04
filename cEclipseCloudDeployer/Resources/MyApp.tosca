@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:elasticity="http://www.example.org/NewXMLSchema" xmlns:sybl="http://www.example.org/SYBL" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" id="hi">
+  <tosca:ServiceTemplate xsi:type="elasticity:TServiceTemplateExtension" id="hello" name="myApplicationDescription">
+    <tosca:BoundaryDefinitions xsi:type="elasticity:TBoundaryDefinitionsExtension">
+      <tosca:Properties>
+        <elasticity:ServiceProperties>
+          <elasticity:Version>1.0</elasticity:Version>
+        </elasticity:ServiceProperties>
+      </tosca:Properties>
+    </tosca:BoundaryDefinitions>
+    <tosca:TopologyTemplate>
+      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C997144673" maxInstances="1" minInstances="1" name="AppServer" initInstances="1" x="290" y="100">
+        <tosca:Properties>
+          <elasticity:NodeProperties>
+            <elasticity:Flavor>m1.medium</elasticity:Flavor>
+          </elasticity:NodeProperties>
+        </tosca:Properties>
+        <tosca:DeploymentArtifacts>
+          <tosca:DeploymentArtifact artifactRef="AppServerImage" artifactType="VMI" name="regionOne/0133e5a7-a27c-4cc3-9c78-6b6127b4a440"/>
+          <tosca:DeploymentArtifact artifactType="Network" name="8ebb464c-ad94-464b-ab87-28cfc46d9ecb"/>
+          <tosca:DeploymentArtifact artifactType="KeyPair" name="akasta"/>
+        </tosca:DeploymentArtifacts>
+      </tosca:NodeTemplate>
+      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C722278586" maxInstances="1" minInstances="1" name="DBServer" initInstances="1" x="555" y="95">
+        <tosca:Properties>
+          <elasticity:NodeProperties>
+            <elasticity:Flavor>m1.small</elasticity:Flavor>
+          </elasticity:NodeProperties>
+        </tosca:Properties>
+        <tosca:DeploymentArtifacts>
+          <tosca:DeploymentArtifact artifactRef="DBServerImage" artifactType="VMI" name="regionOne/eec3d5c9-75d0-4a95-a66b-b08f9a963bc0"/>
+          <tosca:DeploymentArtifact artifactType="Network" name="8ebb464c-ad94-464b-ab87-28cfc46d9ecb"/>
+          <tosca:DeploymentArtifact artifactType="KeyPair" name="akasta"/>
+        </tosca:DeploymentArtifacts>
+      </tosca:NodeTemplate>
+    </tosca:TopologyTemplate>
+  </tosca:ServiceTemplate>
+  <tosca:ArtifactTemplate id="AppServerImage">
+    <tosca:Properties>
+      <elasticity:ImageArtifactProperties>
+        <elasticity:Description>not_specified</elasticity:Description>
+        <elasticity:Id>regionOne/0133e5a7-a27c-4cc3-9c78-6b6127b4a440</elasticity:Id>
+      </elasticity:ImageArtifactProperties>
+    </tosca:Properties>
+  </tosca:ArtifactTemplate>
+  <tosca:ArtifactTemplate id="DBServerImage">
+    <tosca:Properties>
+      <elasticity:ImageArtifactProperties>
+        <elasticity:Description>not_specified</elasticity:Description>
+        <elasticity:Id>regionOne/eec3d5c9-75d0-4a95-a66b-b08f9a963bc0</elasticity:Id>
+      </elasticity:ImageArtifactProperties>
+    </tosca:Properties>
+  </tosca:ArtifactTemplate>
+</tosca:Definitions>
