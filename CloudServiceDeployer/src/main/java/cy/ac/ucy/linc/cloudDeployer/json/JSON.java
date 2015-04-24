@@ -34,36 +34,63 @@ public class JSON {
 			List<String> modules, List<String> instance, String start_time,
 			String finish_time) {
 
-		obj.put("appName ", appName);
-		obj.put("deploymentID ", depID);
-		obj.put("startDeployTime ", start_time);
-		obj.put("finishDeployTime ", finish_time);
-		obj.put("status ", "running");
+		JSONObject json = new JSONObject();
+		int instance_count = 0;
 
-		JSONArray list3 = new JSONArray();
-		for (int i = 1; i < xmlinfo.length; i++) {
-			JSONArray list = new JSONArray();
-			list.add("moduleID : " + modules.get(i-1));
-			list.add("moduleName : " + xmlinfo[i].get("name"));
-			JSONArray list1 = new JSONArray();
-			list.add("instances");
-			list1.add("instanceID : " + instance.get(i-1));
-			list1.add("image : " + xmlinfo[i].get("VMI"));
-			list1.add("flavor : " + xmlinfo[i].get("flavor"));
-			list1.add("key : " + xmlinfo[i].get("KeyPair"));
-			list.add(list1);
-			list3.add(list);
+		System.out.println("Starting of JSON creation...");
+
+		JSONArray deplist = new JSONArray();
+		JSONObject deployment = new JSONObject();
+		JSONArray mod = new JSONArray();
+
+		deployment.put("appName", appName);
+		deployment.put("deploymentID", depID);
+		deployment.put("startDeployTime", start_time);
+		deployment.put("finishDeployTime", finish_time);
+		deployment.put("status", "deployed");
+		deployment.put("provider", "OpenStack");
+		deplist.add(deployment);
+
+		for (int i = 1; i <= modules.size(); i++) {
+			try {
+				JSONObject module = new JSONObject();
+				JSONObject instances = null;
+				JSONArray inst = new JSONArray();
+				module.put("ModuleID", modules.get(i - 1));
+				module.put("ModuleName", xmlinfo[i].get("name"));
+				module.put("initInstances", xmlinfo[i].get("initInstances"));
+
+				for (int j = 0; j < Integer.parseInt((String) xmlinfo[i].get(
+						"initInstances"))
+						&& instance.get(instance_count) != null; j++) {
+					try {
+						instances = new JSONObject();
+						instances.put("instanceID",
+								instance.get(instance_count));
+						instances.put("ImageID", xmlinfo[i].get("VMI"));
+						instances.put("FlavorID", xmlinfo[i].get("flavor"));
+						instances.put("KeyPair", xmlinfo[i].get("KeyPair"));
+						instance_count++;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					inst.add(instances);
+					module.put("Instances", inst);
+				}
+				mod.add(module);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
-		obj.put("modules", list3);
+		deployment.put("Modules", mod);
+		json.put("Deployments", deplist);
 		try {
-
-			file.write(obj.toJSONString());
+			file.write(json.toJSONString());
 			file.flush();
 			file.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Finished JSON creation...");
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
-		// System.out.print(obj);
-
 	}
 }

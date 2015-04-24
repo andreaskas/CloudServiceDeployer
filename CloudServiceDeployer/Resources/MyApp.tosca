@@ -9,7 +9,7 @@
       </tosca:Properties>
     </tosca:BoundaryDefinitions>
     <tosca:TopologyTemplate>
-      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C997144673" maxInstances="1" minInstances="1" name="AppServer" initInstances="1" x="290" y="100">
+      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C997144673" maxInstances="1" minInstances="1" name="AppServer" initInstances="2" x="165" y="105">
         <tosca:Properties>
           <elasticity:NodeProperties>
             <elasticity:Flavor>m1.medium</elasticity:Flavor>
@@ -21,15 +21,15 @@
           <tosca:DeploymentArtifact artifactType="KeyPair" name="akasta"/>
         </tosca:DeploymentArtifacts>
       </tosca:NodeTemplate>
-      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C722278586" maxInstances="1" minInstances="1" name="DBServer" initInstances="1" x="555" y="95">
+      <tosca:NodeTemplate xsi:type="elasticity:TNodeTemplateExtension" id="C722278586" maxInstances="1" minInstances="1" name="DBServer" initInstances="1" x="395" y="105">
         <tosca:Properties>
           <elasticity:NodeProperties>
             <elasticity:Flavor>m1.small</elasticity:Flavor>
           </elasticity:NodeProperties>
         </tosca:Properties>
         <tosca:DeploymentArtifacts>
-          <tosca:DeploymentArtifact artifactRef="DBServerImage" artifactType="VMI" name="regionOne/eec3d5c9-75d0-4a95-a66b-b08f9a963bc0"/>
           <tosca:DeploymentArtifact artifactType="Network" name="8ebb464c-ad94-464b-ab87-28cfc46d9ecb"/>
+          <tosca:DeploymentArtifact artifactRef="DBServerImage" artifactType="VMI" name="regionOne/eec3d5c9-75d0-4a95-a66b-b08f9a963bc0"/>
           <tosca:DeploymentArtifact artifactType="KeyPair" name="akasta"/>
         </tosca:DeploymentArtifacts>
       </tosca:NodeTemplate>
@@ -40,6 +40,14 @@
       <elasticity:ImageArtifactProperties>
         <elasticity:Description>not_specified</elasticity:Description>
         <elasticity:Id>regionOne/0133e5a7-a27c-4cc3-9c78-6b6127b4a440</elasticity:Id>
+      </elasticity:ImageArtifactProperties>
+    </tosca:Properties>
+  </tosca:ArtifactTemplate>
+  <tosca:ArtifactTemplate id="DBServerImage">
+    <tosca:Properties>
+      <elasticity:ImageArtifactProperties>
+        <elasticity:Description>not_specified</elasticity:Description>
+        <elasticity:Id>regionOne/eec3d5c9-75d0-4a95-a66b-b08f9a963bc0</elasticity:Id>
       </elasticity:ImageArtifactProperties>
     </tosca:Properties>
   </tosca:ArtifactTemplate>

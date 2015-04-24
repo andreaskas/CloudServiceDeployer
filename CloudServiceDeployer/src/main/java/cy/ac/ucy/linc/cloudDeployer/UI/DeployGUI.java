@@ -5,14 +5,18 @@ import java.awt.Color;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -32,7 +36,6 @@ public class DeployGUI extends JFrame {
 
 	private JPanel contentPane;
 
-	public final Button button = new Button("Create VM");
 	public final Button button_1 = new Button("Get Image List");
 	public final Button button_2 = new Button("Get Flavor List");
 	public final Button button_3 = new Button("Get Network List");
@@ -40,9 +43,8 @@ public class DeployGUI extends JFrame {
 	public final Button button_5 = new Button("Get SecurityGroups");
 	public final Button button_6 = new Button("Get Instances");
 	public final Button button_7 = new Button("Auto Create");
-	public final Button button_8 = new Button("Remove VM");
-	public final TextArea textArea = new TextArea();
-
+	public final JButton button_10 = new JButton("Exit");
+	private final TextArea textArea = new TextArea();
 	private Deployer deploy;
 
 	private ICloudConnector conn;
@@ -90,17 +92,27 @@ public class DeployGUI extends JFrame {
 
 	public void init() {
 
-		setBackground(new Color(153, 204, 255));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 915, 618);
+		// setBackground(new Color(153, 204, 255));
+
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(153, 204, 255));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 630, 800);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		textArea.setBounds(146, 247, 600, 400);
+		textArea.setBounds(146, 247, 600, 200);
 		contentPane.add(textArea);
+		try {
+			BufferedImage myPicture = ImageIO.read(new File("Resources"
+					+ File.separator + "logo.png"));
+			JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+			picLabel.setBounds(490, 40, 260, 179);
+			contentPane.add(picLabel);
+		} catch (Exception e) {
+
+		}
 
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -210,29 +222,13 @@ public class DeployGUI extends JFrame {
 					// Auto create
 					textArea.setText(" ");
 					textArea.append("Waiting for tosca file...\n");
-					File filename = new File(JOptionPane.showInputDialog(contentPane,
-							"Enter File Name?", "myApp.tosca").toString());
+					File filename = new File(JOptionPane.showInputDialog(
+							contentPane, "Enter File Name?", "myApp.tosca")
+							.toString());
 
-					// System.out.println(f1.getAbsolutePath());
 					textArea.append("Starting now...\n");
 					deploy = new Deployer(filename);
 					textArea.append("Finished...\n");
-					/*
-					 * JFileChooser fileChooser = new JFileChooser();
-					 * 
-					 * FileNameExtensionFilter filter = new
-					 * FileNameExtensionFilter( "TOSCA Files", "tosca");
-					 * fileChooser.setFileFilter(filter);
-					 * fileChooser.setCurrentDirectory(new File("Resources" +
-					 * File.separator)); int returnValue =
-					 * fileChooser.showOpenDialog(null); if (returnValue ==
-					 * JFileChooser.APPROVE_OPTION) { File selectedFile =
-					 * fileChooser.getSelectedFile(); if (selectedFile != null)
-					 * { textArea.append("Read file on: " +
-					 * selectedFile.getName().toString() + "\n"); //
-					 * System.out.println(selectedFile.getName()); } } else
-					 * textArea.append("File not found...\n");
-					 */
 
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -241,30 +237,9 @@ public class DeployGUI extends JFrame {
 			}
 		});
 		button_7.setActionCommand("Print");
-		button_7.setBounds(442, 73, 97, 22);
+		button_7.setBounds(223, 73, 97, 22);
 		contentPane.add(button_7);
 
-		button.setActionCommand("Print");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// Create VM
-				textArea.setText(" ");
-			}
-		});
-		button.setBounds(236, 73, 97, 22);
-		contentPane.add(button);
-
-		button_8.setActionCommand("Print");
-		button_8.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// remove VM
-				textArea.setText(" ");
-			}
-		});
-		button_8.setBounds(339, 73, 97, 22);
-		contentPane.add(button_8);
-
-		JButton button_10 = new JButton("Exit");
 		button_10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -275,7 +250,7 @@ public class DeployGUI extends JFrame {
 		contentPane.add(button_10);
 
 		this.setVisible(true);
-		this.setSize(800, 800);
+		this.setSize(800, 630);
 	}
 
 	public static void main(String[] args) throws Exception {

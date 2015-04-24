@@ -17,6 +17,7 @@ import cy.ac.ucy.linc.cloudDeployer.connectors.ICloudConnector;
 import cy.ac.ucy.linc.cloudDeployer.connectors.openstack.OpenstackConnector;
 import cy.ac.ucy.linc.cloudDeployer.json.JSON;
 
+@SuppressWarnings("rawtypes")
 public class Deployer {
 
 	private static final String CONFIG_PATH = "Resources" + File.separator
@@ -61,14 +62,13 @@ public class Deployer {
 		// initialize deployment list to hold active deployments
 		this.deployments = new HashMap<String, Deployment>();
 
+		// set the time the deployment started
 		this.start_time = new SimpleDateFormat("dd/M/yyyy hh:mm:ss")
 				.format(Calendar.getInstance().getTime());
-		// create a new deployment
-		// appName and other deployment params should be gathered by
-		// c-Eclipse description
+		// create a new deployment id. appName and other
+		// deployment params should be gathered by c-Eclipse description
 
 		HashMap<String, String> params = new HashMap<String, String>();
-		// params.put("appName", "myApplication");
 		params.put("appName", xmlinfo[0].get("appName").toString());
 		this.appName = params.get("appName");
 		this.depID = this.createDeployment(params);
@@ -76,29 +76,23 @@ public class Deployer {
 		System.out.println("Created new Deployment with depID: " + this.depID);
 
 		for (int i = 1; i < xmlinfo.length; i++) {
-			// create modules
-			// module name and other params should be gathered
-			// by c-Eclipse description
+			// create module modName and other params
+			// should be gathered by c-Eclipse description
 
+			// get Initital Instances
 			this.initInstances = xmlinfo[i].get("initInstances").toString();
-			// System.out.println(this.initInstances);
 
 			params = new HashMap<String, String>();
-			// params.put("name", "AppServerTier");
+			// get module name
 			params.put("name", xmlinfo[i].get("name").toString());
 			String m1ID = this.createModule(depID, params);
 			this.modules.add(m1ID);
 			System.out.println("Created new module with modID: " + m1ID
 					+ ", name: " + params.get("name"));
 
-			// add instances to modules by first creating them
+			// add instances to modules by gathering the params
+			// through c-Eclipse description
 			params = new HashMap<String, String>();
-			// params.put("name", "testserver");
-			// params.put("imageID","regionOne/83287548-1666-49de-bf35-c915be44e1cd");
-			// params.put("flavor", "2");
-			// params.put("network", "8ebb464c-ad94-464b-ab87-28cfc46d9ecb");
-			// params.put("keypair", "akasta");
-			// params.put("securityGroup", "default-camf");
 			params.put("name", xmlinfo[i].get("name").toString());
 			params.put("imageID", xmlinfo[i].get("VMI").toString());
 			params.put("flavor", "2");
@@ -106,22 +100,25 @@ public class Deployer {
 			params.put("keypair", xmlinfo[i].get("KeyPair").toString());
 			params.put("securityGroup", "default-camf");
 
-			// System.out.println(Integer.parseInt(this.initInstances));
+			// built instances according to initialInstances parameter
 			for (int j = 0; j < Integer.parseInt(this.initInstances); j++) {
 				String vID = this.addInstanceToModule(this.depID, m1ID, params);
 				this.instances.add(vID);
-				System.out.println("Added new Instance to module with id: "
+				System.out.println("Added new Instance to module "
+						+ xmlinfo[i].get("name").toString() + " with id: "
 						+ vID);
-				// instances.add("1234");
 			}
 		}
 
+		// set the time the deployment finished
 		this.finish_time = new SimpleDateFormat("dd/M/yyyy hh:mm:ss")
 				.format(Calendar.getInstance().getTime());
+
 		// create json information
 		json.write_data(this.xmlinfo, this.appName, this.depID, this.modules,
 				this.instances, this.start_time, this.finish_time);
 
+		@SuppressWarnings("resource")
 		Scanner reader = new Scanner(System.in);
 		System.out
 				.println("Would you like to terminate all the deployments? 1/0");
@@ -203,9 +200,9 @@ public class Deployer {
 					module = m;
 					ArrayList<Instance> ilist = module.getInstancelist();
 					System.out.println(module.getInstancelist());
-					for (int i = 0; i < ilist.size(); i++)
+					for (int i = ilist.size(); i > 0; i--)
 						this.removeInstanceFromModule(depID, modID, ilist
-								.get(i).getInstanceID());
+								.get(i-1).getInstanceID());
 
 					d.removeModule(modID);
 

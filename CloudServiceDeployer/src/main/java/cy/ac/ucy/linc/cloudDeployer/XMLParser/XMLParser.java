@@ -22,6 +22,7 @@ public class XMLParser {
 	 * "myApplicationDescription.tosca";
 	 */
 
+	@SuppressWarnings("rawtypes")
 	public HashMap[] parseXMLFile(String filename) {
 		// HashMap<String, String> params = new HashMap<String, String>();
 

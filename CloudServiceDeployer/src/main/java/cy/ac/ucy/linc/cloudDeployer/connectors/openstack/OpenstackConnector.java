@@ -209,25 +209,12 @@ public class OpenstackConnector implements ICloudConnector {
 	}
 
 	public List<Instance> getInstances() {
-		// List<Instance> instances = null;
-		// SimpleTenantUsage simpleTenantUsage =
-		// this.novaAPI.getSimpleTenantUsageExtensionForZone(DEFAULT_REGION).get().get("camf");
-		// simpleTenantUsage.getServerUsages();
-		// System.out.println("23");
 
 		List<Instance> instances = new ArrayList<Instance>();
 
 		for (ComputeMetadata i : this.computeAPI.listNodes()) {
 			// get NodeMetadata based on NodeID
 			NodeMetadata nodeData = this.computeAPI.getNodeMetadata(i.getId());
-			/*
-			 * SimpleTenantUsageApi api = this.novaAPI
-			 * .getSimpleTenantUsageExtensionForZone(DEFAULT_REGION).get();
-			 * Set<? extends SimpleTenantUsage> results = api.list().toSet();
-			 * 
-			 * SimpleTenantUsage usage = Iterables.getOnlyElement(results);
-			 * System.out.println(usage.getTotalHours());
-			 */
 			instances.add(new Instance(i.getId(), i.getName(), nodeData
 					.getPrivateAddresses().toString(), nodeData.getStatus()
 					.toString(), i.getUri().toString()));
